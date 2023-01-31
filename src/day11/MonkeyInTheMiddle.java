@@ -13,7 +13,7 @@ public class MonkeyInTheMiddle {
     private static List<Monkey> monkeysList;
     private static long lcm = 1;
     private static final int ROUNDS = 10000;
-    private static final String DATA_URL = "src/day11/inputExample.txt";
+    private static final String DATA_URL = "src/day11/input.txt";
     private static final boolean LOW_WORRY = false;
 
 
@@ -132,14 +132,14 @@ public class MonkeyInTheMiddle {
     }
 
     /**
-     * Receives an array of string numbers, and returns a new array of
+     * Receives an array of string numbers, and returns a {@link Queue} of
      * {@link java.math.BigInteger} numbers.
      *
      * @param array
      * @return
      */
-    private static List<BigInteger> convertStringArrayToBigDecimal(String[] array) {
-        List<BigInteger> bigIntegers = new ArrayList<>();
+    private static Queue<BigInteger> convertStringArrayToBigDecimal(String[] array) {
+        Queue<BigInteger> bigIntegers = new ArrayDeque<>();
         for (String value : array) {
             bigIntegers.add(BigInteger.valueOf(Long.parseLong(value.trim())));
         }
@@ -147,44 +147,46 @@ public class MonkeyInTheMiddle {
         return bigIntegers;
     }
 
+    /**
+     * Method that takes a monkey instance and performs the following actions over each item
+     * of it's startingItems queue:
+     * <ol>
+     *     <li>Execute an operation over the item to increase it's worry level.</li>
+     *     <li>Depending on the value of {@link #LOW_WORRY}, divide the worry level by 3 or not.</li>
+     *     <li>Test the divisibility of the worry level.</li>
+     *     <li>Throw the item to other monkey depending on the test result.</li>
+     * </ol>
+     * @param monkey Instance of class {@link Monkey}
+     */
     private static void performTurn(Monkey monkey) {
         //Get reference to startingItems object of the monkey
-        List<BigInteger> startingItems = monkey.getStartingItems();
-        int size = startingItems.size();
-        List<BigInteger> itemsToRemove = new ArrayList<>();
+        Queue<BigInteger> startingItems = monkey.getStartingItems();
 
         //Iterate over each item of the monkey
-        for (int i = 0; i < size; i++) {
-            //Modify the worry value of the object and divide by three
-            BigInteger item = startingItems.get(i);
-            startingItems.set(
-                    i,
-                    LOW_WORRY ?
+        while (!startingItems.isEmpty()) {
+            BigInteger item = startingItems.poll();
+
+            //Execute operation on an item
+            item = LOW_WORRY ?
                     monkey.executeOperation(item)
                             .divide(BigInteger.valueOf(3))
                             .mod(BigInteger.valueOf(lcm)) :
                     monkey.executeOperation(item)
-                            .mod(BigInteger.valueOf(lcm))
-            );
+                            .mod(BigInteger.valueOf(lcm));
 
-            //Perform test
-            item = startingItems.get(i);
+            //Execute divisibility test on the item
             boolean testResult = monkey.executeTest(item);
+
             //Throw item to a new monkey
             if (testResult) {
-                addItemToMonkey(monkey.getDestinationMonkeyIfTrue(), startingItems.get(i));
-                itemsToRemove.add(item);
+                addItemToMonkey(monkey.getDestinationMonkeyIfTrue(), item);
             } else {
-                addItemToMonkey(monkey.getDestinationMonkeyIfFalse(), startingItems.get(i));
-                itemsToRemove.add(item);
+                addItemToMonkey(monkey.getDestinationMonkeyIfFalse(), item);
             }
 
-            //Increment monkey's inspected items by one;
+            //Increase monkey's inspected items by one
             monkey.addInspectedItem();
         }
-
-        //Remove all the items from the monkey's items list
-        startingItems.removeAll(itemsToRemove);
     }
 
     private static void performRounds(int rounds) {

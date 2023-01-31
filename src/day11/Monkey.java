@@ -2,12 +2,13 @@ package day11;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Monkey {
 
-    private List<BigInteger> startingItems;
+    private Queue<BigInteger> startingItems;
     private Function<BigInteger, BigInteger> operation;
     private Predicate<BigInteger> test;
     private int divisible;
@@ -19,11 +20,11 @@ public class Monkey {
         inspectedItems = 0;
     }
 
-    public List<BigInteger> getStartingItems() {
+    public Queue<BigInteger> getStartingItems() {
         return startingItems;
     }
 
-    public void setStartingItems(List<BigInteger> startingItems) {
+    public void setStartingItems(Queue<BigInteger> startingItems) {
         this.startingItems = startingItems;
     }
 
