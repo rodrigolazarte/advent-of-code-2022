@@ -1,7 +1,6 @@
 package day11;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Queue;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,7 +75,7 @@ public class Monkey {
         this.divisible = divisible;
     }
 
-    public void addInspectedItem () {
+    public void addInspectedItem() {
         this.inspectedItems += 1;
     }
 

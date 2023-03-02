@@ -12,9 +12,9 @@ public class MonkeyInTheMiddle {
 
     private static List<Monkey> monkeysList;
     private static long lcm = 1;
-    private static final int ROUNDS = 10000;
+    private static final int ROUNDS = 20;
     private static final String DATA_URL = "src/day11/input.txt";
-    private static final boolean LOW_WORRY = false;
+    private static final boolean LOW_WORRY = true;
 
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -102,51 +102,6 @@ public class MonkeyInTheMiddle {
         return monkey;
     }
 
-    private static Function<BigInteger, BigInteger> parseOperation(String operation) {
-        operation = operation.replace("new = ", "");
-        BigInteger operatorNumber;
-
-        // Evaluates if the operation is between old value and a new number, or if it's only using
-        // the old value
-        if (operation.matches("\\D+\\d+")) {
-            operatorNumber = BigInteger
-                    .valueOf(
-                            Long.parseLong(operation.replaceAll("[^0-9]", ""))
-                    );
-            if (operation.contains("*")) {
-                return (x) -> x.multiply(operatorNumber);
-            }
-
-            return (x) -> x.add(operatorNumber);
-        } else {
-            if (operation.contains("*")) {
-                return (x) -> x.multiply(x);
-            }
-
-            return (x) -> x.add(x);
-        }
-    }
-
-    private static Predicate<BigInteger> parseTest(int divisor) {
-        return x -> x.mod(BigInteger.valueOf(divisor)).equals(BigInteger.ZERO);
-    }
-
-    /**
-     * Receives an array of string numbers, and returns a {@link Queue} of
-     * {@link java.math.BigInteger} numbers.
-     *
-     * @param array
-     * @return
-     */
-    private static Queue<BigInteger> convertStringArrayToBigDecimal(String[] array) {
-        Queue<BigInteger> bigIntegers = new ArrayDeque<>();
-        for (String value : array) {
-            bigIntegers.add(BigInteger.valueOf(Long.parseLong(value.trim())));
-        }
-
-        return bigIntegers;
-    }
-
     /**
      * Method that takes a monkey instance and performs the following actions over each item
      * of it's startingItems queue:
@@ -208,5 +163,50 @@ public class MonkeyInTheMiddle {
         );
 
         return monkeysList.get(0).getInspectedItems() * monkeysList.get(1).getInspectedItems();
+    }
+
+    private static Function<BigInteger, BigInteger> parseOperation(String operation) {
+        operation = operation.replace("new = ", "");
+        BigInteger operatorNumber;
+
+        // Evaluates if the operation is between old value and a new number, or if it's only using
+        // the old value
+        if (operation.matches("\\D+\\d+")) {
+            operatorNumber = BigInteger
+                    .valueOf(
+                            Long.parseLong(operation.replaceAll("[^0-9]", ""))
+                    );
+            if (operation.contains("*")) {
+                return (x) -> x.multiply(operatorNumber);
+            }
+
+            return (x) -> x.add(operatorNumber);
+        } else {
+            if (operation.contains("*")) {
+                return (x) -> x.multiply(x);
+            }
+
+            return (x) -> x.add(x);
+        }
+    }
+
+    private static Predicate<BigInteger> parseTest(int divisor) {
+        return x -> x.mod(BigInteger.valueOf(divisor)).equals(BigInteger.ZERO);
+    }
+
+    /**
+     * Receives an array of string numbers, and returns a {@link Queue} of
+     * {@link java.math.BigInteger} numbers.
+     *
+     * @param array
+     * @return
+     */
+    private static Queue<BigInteger> convertStringArrayToBigDecimal(String[] array) {
+        Queue<BigInteger> bigIntegers = new ArrayDeque<>();
+        for (String value : array) {
+            bigIntegers.add(BigInteger.valueOf(Long.parseLong(value.trim())));
+        }
+
+        return bigIntegers;
     }
 }
