@@ -5,14 +5,15 @@ import java.io.FileReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
 
 public class BeaconExclusionZone {
 
-    private static final String INPUT_URL = "src/day15b/inputExample.txt";
+    private static final String INPUT_URL = "src/day15b/input.txt";
     private static final Set<Sensor> SENSORS = new HashSet<>();
     private static final Set<CoverZone> COVER_ZONES = new HashSet<>();
-    private static final Map<Coordinate, Boolean> CANDIDATE_POINTS = new HashMap<>();
+    private static final Set<Coordinate> CANDIDATE_POINTS = new HashSet<>();
+    private static final Set<Coordinate> DISCARDED_POINTS = new HashSet<>();
     private static final int LOW_LIMIT = 0;
     private static final int HIGH_LIMIT = 20;
 
@@ -20,12 +21,7 @@ public class BeaconExclusionZone {
         readInput();
         setCoverZones();
         evaluateZones();
-        var chosen = CANDIDATE_POINTS
-                .entrySet()
-                .stream()
-                .filter(entry -> !entry.getValue())
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
+        CANDIDATE_POINTS.removeAll(DISCARDED_POINTS);
         System.out.println("END!");
     }
 
@@ -81,10 +77,10 @@ public class BeaconExclusionZone {
     }
 
     private static void verifyPointsBelongingToZone(CoverZone coverZone) {
-        for (Map.Entry<Coordinate, Boolean> entry: CANDIDATE_POINTS.entrySet()) {
-            var result = coverZone.verifyPointBelongsToZone(entry.getKey());
-            if(!entry.getValue()){
-                entry.setValue(result);
+        for (Coordinate entry: CANDIDATE_POINTS) {
+            var result = coverZone.verifyPointBelongsToZone(entry);
+            if (result) {
+                DISCARDED_POINTS.add(entry);
             }
         }
     }
@@ -110,11 +106,11 @@ public class BeaconExclusionZone {
         int j = left.y();
         for (int i = left.x() - 1; i <= up.x(); i++) {
             var coordinate = new Coordinate(i,j);
-            if (!CANDIDATE_POINTS.containsKey(coordinate) &&
+            if (!CANDIDATE_POINTS.contains(coordinate) &&
                     (LOW_LIMIT <= coordinate.x() && coordinate.x() <= HIGH_LIMIT) &&
                     (LOW_LIMIT <= coordinate.y() && coordinate.y() <= HIGH_LIMIT)
             ){
-                CANDIDATE_POINTS.put(new Coordinate(i, j), false);
+                CANDIDATE_POINTS.add(new Coordinate(i, j));
             }
             j--;
 
@@ -126,11 +122,11 @@ public class BeaconExclusionZone {
         int j = left.y();
         for (int i = left.x() - 1; i <= down.x(); i++) {
             var coordinate = new Coordinate(i,j);
-            if (!CANDIDATE_POINTS.containsKey(coordinate) &&
+            if (!CANDIDATE_POINTS.contains(coordinate) &&
                     (LOW_LIMIT <= coordinate.x() && coordinate.x() <= HIGH_LIMIT) &&
                     (LOW_LIMIT <= coordinate.y() && coordinate.y() <= HIGH_LIMIT)
             ){
-                CANDIDATE_POINTS.put(new Coordinate(i, j), false);
+                CANDIDATE_POINTS.add(new Coordinate(i, j));
             }
             j++;
             System.out.println(CANDIDATE_POINTS.size());
@@ -141,11 +137,11 @@ public class BeaconExclusionZone {
         int j = right.y();
         for (int i = right.x() + 1; i >= up.x(); i--) {
             var coordinate = new Coordinate(i,j);
-            if (!CANDIDATE_POINTS.containsKey(coordinate) &&
+            if (!CANDIDATE_POINTS.contains(coordinate) &&
                     (LOW_LIMIT <= coordinate.x() && coordinate.x() <= HIGH_LIMIT) &&
                     (LOW_LIMIT <= coordinate.y() && coordinate.y() <= HIGH_LIMIT)
             ){
-                CANDIDATE_POINTS.put(new Coordinate(i, j), false);
+                CANDIDATE_POINTS.add(new Coordinate(i, j));
             }
             j--;
             System.out.println(CANDIDATE_POINTS.size());
@@ -156,11 +152,11 @@ public class BeaconExclusionZone {
         int j = right.y();
         for (int i = right.x() + 1; i >= down.x(); i--) {
             var coordinate = new Coordinate(i,j);
-            if (!CANDIDATE_POINTS.containsKey(coordinate) &&
+            if (!CANDIDATE_POINTS.contains(coordinate) &&
                     (LOW_LIMIT <= coordinate.x() && coordinate.x() <= HIGH_LIMIT) &&
                     (LOW_LIMIT <= coordinate.y() && coordinate.y() <= HIGH_LIMIT)
             ){
-                CANDIDATE_POINTS.put(new Coordinate(i, j), false);
+                CANDIDATE_POINTS.add(new Coordinate(i, j));
             }
             j++;
             System.out.println(CANDIDATE_POINTS.size());
